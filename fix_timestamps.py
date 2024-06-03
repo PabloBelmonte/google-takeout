@@ -71,6 +71,9 @@ def copy_files(target_path:Path, output_path:Path, album_names:list):
                 base_out_path = f"{output_path}"
             print(f"Copying '{file}' to '{base_out_path}\{file.name}'")
             # shutil.copy(file, f"{base_out_path}\{file.name}")
+            # Check if file exists
+            if not os.path.exists(f"{base_out_path}\{file.name}"):
+                os.remove(f"{base_out_path}\{file.name}")
             file.rename(f"{base_out_path}\{file.name}")
 
 def main():
