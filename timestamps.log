@@ -1,0 +1,45 @@
+[DEBUG] - Extension: .jpg for file C:\Users\Pablo\OneDrive\Pictures\DRONE\Recovered_jpg_file(35) - Copia.jpg
+[DEBUG] - tag: Make (271) - type: string (2) Tag Location: 22 - Data Location: 122 - value: b'Canon\x00'
+[DEBUG] - tag: Model (272) - type: string (2) Tag Location: 34 - Data Location: 128 - value: b'Canon EOS 6D\x00'
+[DEBUG] - tag: XResolution (282) - type: rational (5) Tag Location: 46 - Data Location: 142 - value: b',\x01\x00\x00\x01\x00\x00\x00'
+[DEBUG] - tag: YResolution (283) - type: rational (5) Tag Location: 58 - Data Location: 150 - value: b',\x01\x00\x00\x01\x00\x00\x00'
+[DEBUG] - tag: ResolutionUnit (296) - type: short (3) - value: b'\x02\x00'
+[DEBUG] - tag: Software (305) - type: string (2) Tag Location: 82 - Data Location: 158 - value: <table: 49 bytes>
+[DEBUG] - tag: DateTime (306) - type: string (2) Tag Location: 94 - Data Location: 208 - value: b'2023:10:16 22:52:49\x00'
+[DEBUG] - tag: Artist (315) - type: string (2) Tag Location: 106 - Data Location: 228 - value: b'Afonso_Silva\x00'
+[DEBUG] - tag: ExifIFD (34665) - type: long (4) - value: b'\xf2\x00\x00\x00'
+[DEBUG] - Hash for file C:\Users\Pablo\OneDrive\Pictures\DRONE\Recovered_jpg_file(35) - Copia.jpg is: <90b0b8b89c989f9f>
+[DEBUG] - Extension: .jpg for file C:\Users\Pablo\OneDrive\Pictures\DRONE\Recovered_jpg_file(35).jpg
+[DEBUG] - tag: Make (271) - type: string (2) Tag Location: 22 - Data Location: 122 - value: b'Canon\x00'
+[DEBUG] - tag: Model (272) - type: string (2) Tag Location: 34 - Data Location: 128 - value: b'Canon EOS 6D\x00'
+[DEBUG] - tag: XResolution (282) - type: rational (5) Tag Location: 46 - Data Location: 142 - value: b',\x01\x00\x00\x01\x00\x00\x00'
+[DEBUG] - tag: YResolution (283) - type: rational (5) Tag Location: 58 - Data Location: 150 - value: b',\x01\x00\x00\x01\x00\x00\x00'
+[DEBUG] - tag: ResolutionUnit (296) - type: short (3) - value: b'\x02\x00'
+[DEBUG] - tag: Software (305) - type: string (2) Tag Location: 82 - Data Location: 158 - value: <table: 49 bytes>
+[DEBUG] - tag: DateTime (306) - type: string (2) Tag Location: 94 - Data Location: 208 - value: b'2023:10:16 22:52:49\x00'
+[DEBUG] - tag: Artist (315) - type: string (2) Tag Location: 106 - Data Location: 228 - value: b'Afonso_Silva\x00'
+[DEBUG] - tag: ExifIFD (34665) - type: long (4) - value: b'\xf2\x00\x00\x00'
+[DEBUG] - Hash for file C:\Users\Pablo\OneDrive\Pictures\DRONE\Recovered_jpg_file(35).jpg is: <90b0b8b89c989f9f>
+[DEBUG] - Extension: .jpg for file C:\Users\Pablo\OneDrive\Pictures\DRONE\Recovered_jpg_file(36).jpg
+[DEBUG] - tag: Make (271) - type: string (2) Tag Location: 22 - Data Location: 122 - value: b'Canon\x00'
+[DEBUG] - tag: Model (272) - type: string (2) Tag Location: 34 - Data Location: 128 - value: b'Canon EOS 6D\x00'
+[DEBUG] - tag: XResolution (282) - type: rational (5) Tag Location: 46 - Data Location: 142 - value: b',\x01\x00\x00\x01\x00\x00\x00'
+[DEBUG] - tag: YResolution (283) - type: rational (5) Tag Location: 58 - Data Location: 150 - value: b',\x01\x00\x00\x01\x00\x00\x00'
+[DEBUG] - tag: ResolutionUnit (296) - type: short (3) - value: b'\x02\x00'
+[DEBUG] - tag: Software (305) - type: string (2) Tag Location: 82 - Data Location: 158 - value: <table: 49 bytes>
+[DEBUG] - tag: DateTime (306) - type: string (2) Tag Location: 94 - Data Location: 208 - value: b'2023:10:16 22:52:55\x00'
+[DEBUG] - tag: Artist (315) - type: string (2) Tag Location: 106 - Data Location: 228 - value: b'Afonso_Silva\x00'
+[DEBUG] - tag: ExifIFD (34665) - type: long (4) - value: b'\xf2\x00\x00\x00'
+[DEBUG] - Hash for file C:\Users\Pablo\OneDrive\Pictures\DRONE\Recovered_jpg_file(36).jpg is: <b8b83e3e1e3e3f8f>
+[DEBUG] - Extension: .jpg for file C:\Users\Pablo\OneDrive\Pictures\DRONE\Recovered_jpg_file(37).jpg
+[DEBUG] - tag: Make (271) - type: string (2) Tag Location: 22 - Data Location: 122 - value: b'Canon\x00'
+[DEBUG] - tag: Model (272) - type: string (2) Tag Location: 34 - Data Location: 128 - value: b'Canon EOS 6D\x00'
+[DEBUG] - tag: XResolution (282) - type: rational (5) Tag Location: 46 - Data Location: 142 - value: b',\x01\x00\x00\x01\x00\x00\x00'
+[DEBUG] - tag: YResolution (283) - type: rational (5) Tag Location: 58 - Data Location: 150 - value: b',\x01\x00\x00\x01\x00\x00\x00'
+[DEBUG] - tag: ResolutionUnit (296) - type: short (3) - value: b'\x02\x00'
+[DEBUG] - tag: Software (305) - type: string (2) Tag Location: 82 - Data Location: 158 - value: <table: 49 bytes>
+[DEBUG] - tag: DateTime (306) - type: string (2) Tag Location: 94 - Data Location: 208 - value: b'2023:10:16 22:52:59\x00'
+[DEBUG] - tag: Artist (315) - type: string (2) Tag Location: 106 - Data Location: 228 - value: b'Afonso_Silva\x00'
+[DEBUG] - tag: ExifIFD (34665) - type: long (4) - value: b'\xf2\x00\x00\x00'
+[DEBUG] - Hash for file C:\Users\Pablo\OneDrive\Pictures\DRONE\Recovered_jpg_file(37).jpg is: <7f2c3efcfcbcb8d0>
+[INFO] - HashDict(data={'C:\\Users\\Pablo\\OneDrive\\Pictures\\DRONE\\Recovered_jpg_file(35) - Copia.jpg': '90b0b8b89c989f9f', 'C:\\Users\\Pablo\\OneDrive\\Pictures\\DRONE\\Recovered_jpg_file(35).jpg': '90b0b8b89c989f9f', 'C:\\Users\\Pablo\\OneDrive\\Pictures\\DRONE\\Recovered_jpg_file(36).jpg': 'b8b83e3e1e3e3f8f', 'C:\\Users\\Pablo\\OneDrive\\Pictures\\DRONE\\Recovered_jpg_file(37).jpg': '7f2c3efcfcbcb8d0'})
