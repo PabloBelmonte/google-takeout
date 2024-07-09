@@ -1,0 +1,35 @@
+
+<Watch timer>: Check similarity with n_threads = 16.
+<Start time>: 0.343 s
+<End time>: 1.186 s
+<Elapsed time>: 0.843 s
+
+<Watch timer>: Check similarity with n_threads = 16.
+<Start time>: 0.395 s
+<End time>: 1.301 s
+<Elapsed time>: 0.906 s
+
+<Watch timer>: Check similarity with n_threads = 16.
+<Start time>: 0.354 s
+<End time>: 1.194 s
+<Elapsed time>: 0.840 s
+
+<Watch timer>: Check similarity with n_threads = 16.
+<Start time>: 0.570 s
+<End time>: 27.013 s
+<Elapsed time>: 26.443 s
+
+<Watch timer>: Check similarity with n_threads = 16.
+<Start time>: 0.643 s
+<End time>: 2.312 s
+<Elapsed time>: 1.669 s
+
+<Watch timer>: Check similarity with n_threads = 16.
+<Start time>: 0.812 s
+<End time>: 28.655 s
+<Elapsed time>: 27.842 s
+
+<Watch timer>: Check similarity with n_threads = 16.
+<Start time>: 0.654 s
+<End time>: 31.665 s
+<Elapsed time>: 31.011 s

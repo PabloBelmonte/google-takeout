@@ -11,6 +11,60 @@ from win32_setctime import setctime
 import logging
 from PIL import Image, ImageFile
 import imagehash
+import numpy as np
+import time
+
+from numbers import Real
+from timeit import default_timer as timer
+from dataclasses import dataclass
+
+from multiprocessing import Process
+import concurrent.futures
+
+@dataclass
+class WatchTimer:
+    """Data class for watch timer."""
+    id: str = ""
+    start_time: Real = None
+    end_time: Real = None
+    elapsed_time: Real = None
+
+    def start(self) -> None:
+        self.start_time = timer()
+    
+    def stop(self) -> None:
+        self.end_time = timer()
+        self.elapsed_time = self.end_time - self.start_time
+    
+    def get_time(self) -> Real:
+        return self.elapsed_time
+    
+    def log(self, file_name: str, append: bool = True) -> None:
+        """Log results into a file"""
+
+        open_letter = "a" if append else "w"
+        with open(file_name, open_letter) as results:
+            results.write(
+                f"""
+<Watch timer>: {self.id}
+<Start time>: {self.start_time:.3f} s
+<End time>: {self.end_time:.3f} s
+<Elapsed time>: {self.elapsed_time:.3f} s
+"""
+            )
+    
+    def __repr__(self) -> str:
+        """To replace the print() method return for this object."""
+        return f"""
+<Watch timer>: {self.id}
+<Start time>: {self.start_time:.3f} s
+<End time>: {self.end_time:.3f} s
+<Elapsed time>: {self.elapsed_time:.3f} s
+"""
+    
+    def __post_init__(self) -> None:
+        """Start timer"""
+        self.start()
 
 # Run the exiftool command to fix timestamps
 def call_exiftool(exiftool_path:Path, target_path:Path):
@@ -199,42 +253,35 @@ def modify_timestamps(file_path:Path, modfify:bool=True):
     
     asdsda
 
-def hash_difference(hash0: imagehash.ImageHash, hash1: imagehash.ImageHash, cutoff: int=5):
+def hash_difference(hash0: imagehash.ImageHash, hash1: imagehash.ImageHash, cutoff: int):
     difference = hash0 - hash1
-    if abs(hash0 - hash1) < cutoff:
+    similar = abs(hash0 - hash1) <= cutoff
+    if similar:
         logging.debug(f'Images are similar, with diff = <{difference}>')
     else:
         logging.debug(f'Images are not similar, with diff = <{difference}>')
+    return similar, difference
 
-import time
-from dataclasses import dataclass
-@dataclass
-class HashDict:
-    data:dict
-
-def check_hash_similarity(file_path:Path, hash_img_dict:HashDict=HashDict(data={})):
-    hash = imagehash.average_hash(Image.open(file_path))
-    # time.sleep(0.01)
+def check_hash_similarity(file_path:Path):
+    # hash = imagehash.average_hash(Image.open(file_path))
+    # hash = imagehash.phash(Image.open(file_path))
+    hash = imagehash.dhash(Image.open(file_path))
     logging.debug(f"Hash for file {file_path} is: <{hash}>")
-    hash_img_dict.data.setdefault(str(file_path), str(hash))
+    return {str(file_path): str(hash)}
+
 
 def build_image_hash_dict(
     base_path:Path,
     go_to_subfolders:bool=True,
     ignore_folders:list=[],
+    arg_list:list=[],
     ) -> dict:
-    # hash_img_dict = {}
-    hash_img_dict = HashDict(data={})
+    hash_img_dict = {}
     ignore_extensions = [
         ".lrv",
         ".mp4",
         ".dng",
     ]
-    
-    from multiprocessing import Process
-    ######## CHECK WITH QUEUE????
-    
-    processes = []
     
     for file_path in base_path.iterdir():
         if file_path.is_dir() and file_path.name not in ignore_folders:
@@ -244,6 +291,7 @@ def build_image_hash_dict(
                 build_image_hash_dict(
                     base_path=file_path,
                     go_to_subfolders=go_to_subfolders,
+                    arg_list=arg_list,
                 )
         else:
             if file_path.is_file():
@@ -251,43 +299,79 @@ def build_image_hash_dict(
                 if extension.lower() in ignore_extensions:
                     continue
                 logging.debug(f"Extension: {extension} for file {file_path}")
-                # check_hash_similarity(file_path=file_path, hash_img_dict=hash_img_dict)
-                p = Process(target=check_hash_similarity, args=(file_path, hash_img_dict))
-                processes.append(p)
+                arg_list.append(file_path)
+    n_threads = None
+    n_threads = min(32, (os.cpu_count() or 1) + 4)
+    my_timer = WatchTimer(id=f"Check similarity with n_threads = {n_threads}.")
     
-    for p in processes:
-        p.start()
-    
-    for p in processes:
-        p.join()
+    with concurrent.futures.ThreadPoolExecutor(max_workers=n_threads) as executor:
+        return_values = executor.map(check_hash_similarity, arg_list)
+    for item in return_values:
+        hash_img_dict.update(item)
+    time.sleep(0.01)
+    my_timer.stop()
+    time.sleep(0.01)
+    my_timer.log(file_name='timer.log', append = True)
     
     return hash_img_dict
 
-def find_most_similar_image(file_path:Path, hash_img_dict:HashDict) -> Path:
-    if file_path in hash_img_dict.data:
-        hash0 = imagehash.hex_to_hash(hash_img_dict.data[file_path])
+def find_duplicate_images(similarity_dict:dict, cutoff:int=5):
+    already_checked = []
+    for nxt_img in similarity_dict:
+        if str(nxt_img) not in already_checked:
+            most_similar, min_hash = find_most_similar_image(
+                file_path=Path(str(nxt_img)),
+                hash_img_dict=similarity_dict,
+                cutoff=cutoff,
+            )
+            if most_similar is None:
+                already_checked.append(str(nxt_img))
+                continue
+            img_name = Path(nxt_img).name
+            img_base_path = Path(nxt_img).parent
+            similar_name = Path(most_similar).name
+            similar_base_path = Path(most_similar).parent
+            msg = f"Image <{img_name}> is similar with <{similar_name}> [hash diff = <{min_hash}>]"
+            if img_base_path == similar_base_path:
+                msg += f"\n\tBoth images are in the same folder : <{img_base_path}>"
+            else:
+                msg += f"\n\tImages are in different folders: <{img_base_path}> and <{similar_base_path}>"
+            logging.info(msg)
+            if str(most_similar) not in already_checked:
+                already_checked.append(str(most_similar))
+
+def find_most_similar_image(file_path:Path, hash_img_dict:dict, cutoff:int) -> Path:
+    if str(file_path) in hash_img_dict:
+        hash0 = imagehash.hex_to_hash(hash_img_dict[str(file_path)])
     else:
-        temp = HashDict(data={})
-        check_hash_similarity(file_path=Path(file_path), hash_img_dict=temp)
+        temp = check_hash_similarity(file_path=Path(file_path))
         hash0 = imagehash.hex_to_hash(temp[str(file_path)])
-        
-    for fpath in hash_img_dict.data:
-        next_hash = imagehash.hex_to_hash(hash_img_dict.data[fpath])
-        if fpath == file_path:
+    all_similar = {}
+    for fpath in hash_img_dict:
+        next_hash = imagehash.hex_to_hash(hash_img_dict[fpath])
+        if str(fpath) == str(file_path):
             continue
         logging.debug(f"Next file path: {fpath}")
-        hash_difference(
+        similar, difference = hash_difference(
             hash0=hash0,
             hash1=next_hash,
-            cutoff=5,
+            cutoff=cutoff,
             )
+        if similar:
+            all_similar.update({difference: fpath})
+        
+    if all_similar == {}:
+        return None, None
+    min_hash = min(all_similar.keys())
+    return all_similar.get(min_hash), min_hash
 
 def save_json(hash_img_dict:dict, out_file:Path):
-    # Check if file exists
-    # if os.path.exists(out_file):
-    #     asdasd
     with open(out_file, "w") as f:
         json.dump(hash_img_dict, f, indent=4)
+
+def load_json(in_file:Path):
+    with open(in_file, "r") as f:
+        return json.load(f)
 
 def loop_over_files(
     base_path:Path,
@@ -312,6 +396,7 @@ def loop_over_files(
 if __name__ == "__main__":
     # Set logging to file and console
     level = logging.DEBUG
+    level = logging.INFO
     logging.basicConfig(filename='timestamps.log', filemode='w', format='[%(levelname)s] - %(message)s', level=level)
     # logging.basicConfig(filename='timestamps.log', filemode='w', format='%(message)s', level=level)
     
@@ -321,32 +406,27 @@ if __name__ == "__main__":
     
     ImageFile.LOAD_TRUNCATED_IMAGES = True
     
-    
-    # file_path = Path(r"D:\Pablo\Downloads\test - Copia.jpg")
-    # file_path = Path(r"D:\Pablo\Downloads\2023-12-18 - Copia.jpg")
-    # # file_path = Path(r"C:\Users\Pablo\OneDrive\Pictures\takeout\2015-02-09 - Copia.jpg")
-    # # file_path = Path(r"C:\Users\Pablo\OneDrive\Pictures\takeout\2015-02-09.jpg")
-    # # file_path = Path(r"C:\Users\Pablo\OneDrive\Pictures\takeout\2015-02-09(1).jpg")
-    # # file_path = Path(r"C:\Users\Pablo\OneDrive\Pictures\takeout\2013-10-08 - Copia.jpg")
-    # # file_path = Path(r"C:\Users\Pablo\OneDrive\Pictures\takeout\2013-10-08.jpg")
-    # file_path = Path(r"C:\Users\Pablo\OneDrive\Pictures\takeout\Screenshot_2021-12-18-13-57-12-973_com.google.a.jpg")
-    
-    # check_similarity()
-    
     similarity_dict = build_image_hash_dict(
-        base_path=Path(r"C:\Users\Pablo\OneDrive\Pictures\DRONE"),
+        # base_path=Path(r"C:\Users\Pablo\OneDrive\Pictures\DRONE"),
         # base_path=Path(r"C:\BACKUP FOTOS ONEDRIVE\DRONE"),
-        go_to_subfolders=1,
+        base_path=Path(r"C:\Users\Pablo\OneDrive\Pictures\Fotos Casamento"),
+        # base_path=Path(r"C:\Users\Pablo\OneDrive\Pictures\Lapinha"),
+        go_to_subfolders=True,
         # ignore_folders=["teste"],
     )
-    logging.info(pformat(similarity_dict))
-    asd
-    save_json(similarity_dict, current_path / "timestamps.json")
+    save_json(similarity_dict, current_path / "fotos_casamento_timestamps.json")
+    # save_json(similarity_dict, current_path / "drone_timestamps.json")
     
-    find_most_similar_image(
-        file_path=Path(r"C:\Users\Pablo\OneDrive\Pictures\DRONE\Recovered_jpg_file(35).jpg"),
-        hash_img_dict=similarity_dict
+    # similarity_dict = load_json(current_path / "drone_timestamps.json")
+    # similarity_dict = load_json(current_path / "timestamps.json")
+    similarity_dict = load_json(current_path / "fotos_casamento_timestamps.json")
+    logging.info(pformat(similarity_dict))
+    
+    find_duplicate_images(
+        similarity_dict=similarity_dict.copy(),
+        cutoff=0
     )
+    pprint(similarity_dict)
     
     _STOP_
     loop_over_files(
@@ -354,7 +434,8 @@ if __name__ == "__main__":
         # base_path=Path(r"C:\Users\Pablo\OneDrive\Pictures\Download"),
         # base_path=Path(r"C:\Users\Pablo\OneDrive\Pictures\takeout"),
         # base_path=Path(r"C:\Users\Pablo\OneDrive\Pictures\Camera Roll"),
-        base_path=Path(r"C:\Users\Pablo\OneDrive\Pictures\DRONE"),
+        # base_path=Path(r"C:\Users\Pablo\OneDrive\Pictures\DRONE"),
+        base_path=Path(r"C:\Users\Pablo\OneDrive\Pictures\Fotos Casamento"),
         go_to_subfolders=1,
         # ignore_folders=["teste"],
         modfify=0
